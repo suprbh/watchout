@@ -23,13 +23,30 @@ var createEnemies = function(gameOptions){
   return enemies;
 };
 
+var player = {
+  x: axes.x(50),
+  y: axes.y(50)
+};
+
 var svg = d3.select("body").append("svg")
     .attr("width", gameOptions.width)
     .attr("height", gameOptions.height)
     .append("g");
-    // .attr("transform", "translate(32," + (height / 2) + ")");
 
-function update(data) {
+    // .attr("transform", "translate(32," + (height / 2) + ")");
+var playerUpdate = function (data) {
+  var circlePlayer = svg.selectAll('circle.player').data(data);
+
+  circlePlayer.enter().append('circle')
+    .attr('class', 'player')
+    .attr('fill', 'red')
+    .attr("r", "10")
+    .call(drag);
+
+  circlePlayer.attr('cy', function(d) { return d.y });
+  circlePlayer.attr('cx', function(d) { return d.x });
+}
+var enemyUpdate = function (data) {
 
   // DATA JOIN
   // Join new data with old elements, if any.
@@ -63,13 +80,65 @@ var shuffleEnemies = function(enemies){
   });
   return enemies;
 };
+  // var drag = d3.behavior.drag()
+  //     on.('drag',function(d, i){
+  //     player.x = d3.event.x;
+  //     player.y = d3.event.y;
+  //     console.log("watchout!",player.x, player.y);
+  //     playerUpdate(player);
+    // }
+// var drag = d3.behavior.drag()
+//     .on('drag',function(d, i)
+//     debugger;
+//     console.log("d",d);
+//     d.x = d3.event.dx;
+//     d.y = d3.event.dy;
+//     // d.x = d3.mouse(this)[0];
+//     // d.y = d3.mouse(this)[1]; // is dy right?
+
+//     d3.select(this).attr('cy', function(d) { return d.y });
+//     d3.select(this).attr('cx', function(d) { return d.x });
+//     console.log("watchout!",d.x, d.y);
+//   });
+//
+var dragMove = function(){
+  console.log('here');
+  debugger;
+  console.log(this);
+  //d.x += d3.event.dx;
+  //d.y += d3.event.dy;
+  // d3.select(this)
+  //   .attr('cx', d.x)
+  //   .attr('cy', d.y);
+};
+
+var drag = d3.behavior.drag()
+    .on('drag', dragMove);
+
+// var player = {
+//   id:'player',
+//   x:axes.x(50),
+//   y:axes.y(50)
+// };
 
 var watchout = function(){
   var enemies = createEnemies(gameOptions);
-  update(enemies);
+  enemyUpdate(enemies);
+// {"x": axes.x(50), "y": axes.y(50)}
+  var circlePlayer = svg.selectAll('circle.player')
+    .data([{"x":50, "y":50}])
+    .enter().append('circle')
+    .attr('class', 'player')
+    .attr('fill', 'red')
+    .attr("r", "10")
+    .attr("cx", axes.x(50))
+    .attr("cy", axes.y(50));
 
+  d3.selectAll('circle.player').call(drag);
+
+  // playerUpdate(player);
   setInterval(function(){
-    update(shuffleEnemies(enemies));
+    enemyUpdate(shuffleEnemies(enemies));
   }, 1500);
 
 };
