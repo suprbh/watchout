@@ -69,18 +69,20 @@ var enemyUpdate = function (data) {
   // Appending to the enter selection expands the update selection to include
   // entering elements; so, operations on the update selection after appending to
   // the enter selection will apply to both entering and updating nodes.
-  circleEnemy.transition().duration(2500)
+  circleEnemy.transition().duration(1000)
     .attr("cx", function(d) {return d.x})
-    .attr("cy", function(d) {return d.y})
-    .tween('collision', function(endData){
-      //interpolate x and y coordinates
-      //invoke collisionCheck
-      var enemy = {
-        x: endData.x,
-        y: endData.y
-      };
-      tweenCollisionCheck(enemy,player);
-    });
+    .attr("cy", function(d) {return d.y});
+    // .tween('collision', function(endData){
+    //   //interpolate x and y coordinates
+    //   //invoke collisionCheck
+    //   var enemy = {
+    //     x: endData.x,
+    //     y: endData.y
+    //   };
+    //   tweenCollisionCheck(enemy,player);
+    // });
+    collisionCheck(data,player);
+
 
   // EXIT
   // Remove old elements as needed.
@@ -104,17 +106,18 @@ var collision = function(){
 var tweenCollisionCheck = function(enemy,player){
   var distance;
   distance = Math.sqrt((Math.pow((player.x - enemy.x),2)) + (Math.pow((player.y - enemy.y),2)));
-  if ( (player.radius + enemy.radius) > distance ) {
+  if ( 10*(player.radius + enemy.radius) > distance ) {
     console.log(distance);
     collision();
   }
 };
 
 var collisionCheck = function(enemies,player){
+  // debugger;
   var distance = 0;
   _.each(enemies,function(enemy){
     distance = Math.sqrt((Math.pow((player.x - enemy.x),2)) + (Math.pow((player.y - enemy.y),2)));
-    if ( (player.radius + enemy.radius) > distance ) {
+    if ((player.radius + enemy.radius) > distance ) {
       collision();
     }
   })
@@ -151,8 +154,7 @@ var player = {
 };
 
 var watchout = function(){
-  var enemies = createEnemies(gameOptions);
-  enemyUpdate(enemies);
+var enemies = createEnemies(gameOptions);
 // {"x": axes.x(50), "y": axes.y(50)}
   var circlePlayer = svg.selectAll('circle.player')
     .data([player])
@@ -164,9 +166,10 @@ var watchout = function(){
     .attr("cy", axes.y(50));
 
   d3.selectAll('circle.player').call(drag);
-  setInterval(function(){
-    collisionCheck(enemies,player);
-  },10);
+  enemyUpdate(enemies);
+  // setInterval(function(){
+  //   // collisionCheck(enemies,player);
+  // },10);
   setInterval(function(){
     enemyUpdate(shuffleEnemies(enemies));
     scoreboard.currentScore++;
@@ -174,7 +177,7 @@ var watchout = function(){
     .select('span')
     .data([scoreboard.highScore,scoreboard.currentScore,scoreboard.collisions])
     .text(function(d){return d;});
-  }, 1500);
+  }, 1000);
 
 };
 
