@@ -27,8 +27,6 @@ var svg = d3.select("body").append("svg")
     .append("g");
 
 var enemyUpdate = function (data) {
-
-  // debugger;
   // DATA JOIN
   // Join new data with old elements, if any.
   var circleEnemy = svg.selectAll("circle.enemy")
